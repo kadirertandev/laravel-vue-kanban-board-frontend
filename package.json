@@ -11,8 +11,6 @@
     "type-check": "vue-tsc --build"
   },
   "dependencies": {
-    "@formkit/core": "^1.6.9",
-    "@formkit/vue": "^1.6.9",
     "axios": "^1.8.4",
     "flowbite": "^3.1.2",
     "flowbite-vue": "^0.2.1",
