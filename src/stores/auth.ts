@@ -41,7 +41,7 @@ export const useAuthStore = defineStore(
           signal: controller.signal,
         });
         await getUser(controller);
-        router.push({ name: "authTest" });
+        router.push({ name: "boardIndex" });
         $toast.info("You're logged in!", {
           position: "top-right",
         });
@@ -70,7 +70,7 @@ export const useAuthStore = defineStore(
           signal: controller.signal,
         });
         await getUser(controller);
-        router.push({ name: "authTest" });
+        router.push({ name: "boardIndex" });
         $toast.info("You're logged in!", {
           position: "top-right",
         });
@@ -102,7 +102,7 @@ export const useAuthStore = defineStore(
       try {
         await axiosInstance.post("/logout");
         clearState();
-        router.push({ name: "home" });
+        router.push({ name: "home", force: true });
         $toast.info("You're logged out!", {
           position: "top-right",
         });
