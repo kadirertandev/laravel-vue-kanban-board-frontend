@@ -29,3 +29,10 @@ export interface Processing {
   login: boolean;
   register: boolean;
 }
+
+export interface Board {
+  id: number;
+  title: string;
+  description: string;
+  createdAt: string;
+}
