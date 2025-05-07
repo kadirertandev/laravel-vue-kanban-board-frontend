@@ -36,3 +36,13 @@ export interface Board {
   description: string;
   createdAt: string;
 }
+
+export interface BoardProcessing {
+  getBoards: boolean;
+  create: boolean;
+}
+
+export interface CreateBoardForm {
+  title: string;
+  description: string;
+}

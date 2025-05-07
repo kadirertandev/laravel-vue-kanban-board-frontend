@@ -1,22 +1,28 @@
 <script setup lang="ts">
 import { FwbCard, FwbButton, FwbSpinner } from 'flowbite-vue'
 import { useBoardStore } from "@/stores/board.ts"
+import { useModalStore } from '@/stores/modal'
 import { onMounted } from "vue"
+import CreateBoardModal from "@/components/modals/board/CreateBoardModal.vue"
 
 const boardStore = useBoardStore();
+const modalStore = useModalStore();
 
 onMounted(() => {
   boardStore.getBoards();
 })
+
 </script>
 
 <template>
   <div class="flex-1 flex flex-col p-4 overflow-hidden">
     <div class="mb-2 px-4">
-      <fwb-button color="dark" class="cursor-pointer">Create Board</fwb-button>
+      <fwb-button @click="modalStore.openModal('create-board')" color="dark" class="cursor-pointer">Create
+        Board</fwb-button>
+      <CreateBoardModal />
     </div>
 
-    <div v-if="boardStore.loading" class="flex-1 flex items-center justify-center">
+    <div v-if="boardStore.processing.getBoards" class="flex-1 flex items-center justify-center">
       <fwb-spinner size="12" />
     </div>
     <div v-else class="flex-1 overflow-scroll p-4">
