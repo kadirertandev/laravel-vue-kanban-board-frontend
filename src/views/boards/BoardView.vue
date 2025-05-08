@@ -1,32 +1,47 @@
 <script setup lang="ts">
-import { ChevronDoubleLeftIcon, ChevronDoubleRightIcon, EllipsisHorizontalIcon, EllipsisVerticalIcon, PencilSquareIcon, PlusIcon, TrashIcon } from '@heroicons/vue/24/solid';
 import {
-  FwbButton, FwbDropdown
+  ChevronDoubleLeftIcon,
+  ChevronDoubleRightIcon,
+  EllipsisHorizontalIcon,
+  EllipsisVerticalIcon,
+  PencilSquareIcon,
+  PlusIcon,
+  TrashIcon
+} from '@heroicons/vue/24/solid';
+import {
+  FwbButton,
+  FwbDropdown,
+  FwbSpinner
 } from 'flowbite-vue'
-import { useTemplateRef } from 'vue';
+import { useTemplateRef, watchEffect } from 'vue';
+import { useHorizontalScroll } from '@/composables/useHorizontalScroll';
+import { useBoardStore } from '@/stores/board';
+import { useRoute } from 'vue-router';
+import EditBoardModal from '@/components/modals/board/EditBoardModal.vue';
+import { useModalStore } from '@/stores/modal';
+import ConfirmDeleteBoardModal from '@/components/modals/board/ConfirmDeleteBoardModal.vue';
 
 const columnContainer = useTemplateRef("column-container")
+const { scrollLeft, scrollRight } = useHorizontalScroll(columnContainer);
 
-const scrollLeft = () => {
-  columnContainer.value?.scroll({
-    left: -100000,
-    behavior: "smooth"
-  });
-}
+const boardStore = useBoardStore();
+const modalStore = useModalStore();
+const route = useRoute();
 
-const scrollRight = () => {
-  columnContainer.value?.scroll({
-    left: 100000,
-    behavior: "smooth"
-  });
-}
+watchEffect(() => {
+  boardStore.getBoard(Number(route.params.boardId));
+})
 </script>
 
 <template>
-  <div class="flex-1 flex flex-col overflow-scroll gap-4 p-4">
+  <div v-if="!boardStore.processing.getBoard" class="flex-1 flex flex-col overflow-scroll gap-4 p-4">
     <!-- Board Info Start -->
-    <div class="flex items-center justify-between px-4">
-      <h1 class="text-3xl" v-text="'{{ Board Name }}'"></h1>
+    <div class="flex items-center justify-between gap-2">
+      <div class="flex-1">
+        <h1 class="text-3xl font-thin">{{ boardStore.board?.title }}</h1>
+        <p class="text-sm italic text-gray-800">{{ boardStore.board?.description }}</p>
+      </div>
+
 
       <div class="flex items-center gap-4">
         <div class="flex items-center justify-end gap-2">
@@ -39,7 +54,7 @@ const scrollRight = () => {
           </fwb-button>
         </div>
 
-        <fwb-dropdown placement="bottom">
+        <fwb-dropdown placement="bottom" close-inside>
           <template #trigger>
             <fwb-button color="alternative" class="cursor-pointer">
               <template #prefix>
@@ -49,14 +64,15 @@ const scrollRight = () => {
             </fwb-button>
           </template>
           <nav class="text-sm text-gray-700 dark:text-gray-200 *:cursor-pointer">
-            <fwb-button href="#" color="alternative"
+            <fwb-button @click="modalStore.openModal('edit-board')" color="alternative"
               class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full">
               <template #prefix>
                 <PencilSquareIcon class="w-5 h-5" />
               </template>
-              <span>Rename</span>
+              <span>Edit</span>
             </fwb-button>
-            <fwb-button href="#" color="alternative"
+
+            <fwb-button @click="modalStore.openModal('delete-board')" color="alternative"
               class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full">
               <template #prefix>
                 <TrashIcon class="w-5 h-5" />
@@ -65,15 +81,19 @@ const scrollRight = () => {
             </fwb-button>
           </nav>
         </fwb-dropdown>
+        <EditBoardModal v-if="boardStore.board" :board="boardStore.board" />
+        <ConfirmDeleteBoardModal v-if="boardStore.board" :board="boardStore.board" />
+
       </div>
     </div>
     <!-- Board Info End -->
 
     <div ref="column-container" class="flex-1 overflow-scroll flex justify-start gap-4 pb-4">
       <!-- Columns Start -->
-      <div class=" bg-slate-200 rounded-lg w-96 min-w-96 flex flex-col min-h-full">
+      <div v-for="(column) in boardStore.board?.columns" :key="column.id"
+        class="bg-slate-200 rounded-lg w-96 min-w-96 flex flex-col min-h-full">
         <div class="flex items-center justify-between px-4 my-1">
-          <h1 class="text-2xl" v-text="'{{ Column Name }}'"></h1>
+          <h1 class="text-2xl">{{ column.title }}</h1>
           <fwb-dropdown placement="bottom">
             <template #trigger>
               <EllipsisHorizontalIcon class="w-7 h-7 cursor-pointer" />
@@ -98,215 +118,10 @@ const scrollRight = () => {
         </div>
 
         <div class="flex-1 flex flex-col gap-2 px-4 my-1 overflow-scroll *:rounded-lg *:p-4">
-          <div class="bg-white text-black ">Lorem ipsum dolor sit
-            amet consectetur
-            adipisicing
-            elit. Ullam
-            accusantium
-            reiciendis veritatis.</div>
-          <div class="bg-white text-black">2</div>
-          <div class="bg-white text-black">3</div>
-          <div class="bg-white text-black">1</div>
-          <div class="bg-white text-black">2</div>
-          <div class="bg-white text-black">3</div>
-          <div class="bg-white text-black">1</div>
-          <div class="bg-white text-black">2</div>
-          <div class="bg-white text-black">3</div>
-          <div class="bg-white text-black">1</div>
-          <div class="bg-white text-black">2</div>
-          <div class="bg-white text-black">3</div>
-          <div class="bg-white text-black">3</div>
-          <div class="bg-white text-black">3</div>
-          <div class="bg-white text-black">3</div>
-          <div class="bg-white text-black">3</div>
-          <div class="bg-white text-black">3</div>
-          <div class="bg-white text-black">3</div>
-          <div class="bg-white text-black">3</div>
-        </div>
-
-        <div>
-          <button class="w-full flex items-center gap-2 p-4 cursor-pointer hover:bg-slate-300 rounded-b-lg">
-            <PlusIcon class="w-6 h-6" />
-            <span>Add Task</span>
-          </button>
-        </div>
-      </div>
-      <!-- Columns End -->
-
-      <!-- Columns Start -->
-      <div class=" bg-slate-200 rounded-lg w-96 min-w-96 flex flex-col min-h-full">
-        <div class="flex items-center justify-between px-4 my-1">
-          <h1 class="text-2xl" v-text="'{{ Column Name }}'"></h1>
-          <fwb-dropdown placement="bottom">
-            <template #trigger>
-              <EllipsisHorizontalIcon class="w-7 h-7 cursor-pointer" />
-            </template>
-            <nav class="text-sm text-gray-700 dark:text-gray-200 *:cursor-pointer">
-              <fwb-button href="#" color="alternative"
-                class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full">
-                <template #prefix>
-                  <PencilSquareIcon class="w-5 h-5" />
-                </template>
-                <span>Rename</span>
-              </fwb-button>
-              <fwb-button href="#" color="alternative"
-                class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full">
-                <template #prefix>
-                  <TrashIcon class="w-5 h-5" />
-                </template>
-                <span>Delete</span>
-              </fwb-button>
-            </nav>
-          </fwb-dropdown>
-        </div>
-
-        <div class="flex-1 flex flex-col gap-2 px-4 my-1 overflow-scroll *:rounded-lg *:p-4">
-          <div class="bg-white text-black ">Lorem ipsum dolor sit
-            amet consectetur
-            adipisicing
-            elit. Ullam
-            accusantium
-            reiciendis veritatis.</div>
-          <div class="bg-white text-black">2</div>
-          <div class="bg-white text-black">3</div>
-        </div>
-
-        <div>
-          <button class="w-full flex items-center gap-2 p-4 cursor-pointer hover:bg-slate-300 rounded-b-lg">
-            <PlusIcon class="w-6 h-6" />
-            <span>Add Task</span>
-          </button>
-        </div>
-      </div>
-      <!-- Columns End -->
-
-      <!-- Columns Start -->
-      <div class=" bg-slate-200 rounded-lg w-96 min-w-96 flex flex-col min-h-full">
-        <div class="flex items-center justify-between px-4 my-1">
-          <h1 class="text-2xl" v-text="'{{ Column Name }}'"></h1>
-          <fwb-dropdown placement="bottom">
-            <template #trigger>
-              <EllipsisHorizontalIcon class="w-7 h-7 cursor-pointer" />
-            </template>
-            <nav class="text-sm text-gray-700 dark:text-gray-200 *:cursor-pointer">
-              <fwb-button href="#" color="alternative"
-                class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full">
-                <template #prefix>
-                  <PencilSquareIcon class="w-5 h-5" />
-                </template>
-                <span>Rename</span>
-              </fwb-button>
-              <fwb-button href="#" color="alternative"
-                class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full">
-                <template #prefix>
-                  <TrashIcon class="w-5 h-5" />
-                </template>
-                <span>Delete</span>
-              </fwb-button>
-            </nav>
-          </fwb-dropdown>
-        </div>
-
-        <div class="flex-1 flex flex-col gap-2 px-4 my-1 overflow-scroll *:rounded-lg *:p-4">
-          <div class="bg-white text-black ">Lorem ipsum dolor sit
-            amet consectetur
-            adipisicing
-            elit. Ullam
-            accusantium
-            reiciendis veritatis.</div>
-          <div class="bg-white text-black ">Lorem ipsum dolor sit
-            amet consectetur
-            adipisicing
-            elit. Ullam
-            accusantium
-            reiciendis veritatis.</div>
-          <div class="bg-white text-black ">Lorem ipsum dolor sit
-            amet consectetur
-            adipisicing
-            elit. Ullam
-            accusantium
-            reiciendis veritatis.</div>
-          <div class="bg-white text-black ">Lorem ipsum dolor sit
-            amet consectetur
-            adipisicing
-            elit. Ullam
-            accusantium
-            reiciendis veritatis.</div>
-          <div class="bg-white text-black ">Lorem ipsum dolor sit
-            amet consectetur
-            adipisicing
-            elit. Ullam
-            accusantium
-            reiciendis veritatis.</div>
-          <div class="bg-white text-black ">Lorem ipsum dolor sit
-            amet consectetur
-            adipisicing
-            elit. Ullam
-            accusantium
-            reiciendis veritatis.</div>
-        </div>
-
-        <div>
-          <button class="w-full flex items-center gap-2 p-4 cursor-pointer hover:bg-slate-300 rounded-b-lg">
-            <PlusIcon class="w-6 h-6" />
-            <span>Add Task</span>
-          </button>
-        </div>
-      </div>
-      <!-- Columns End -->
-
-      <!-- Columns Start -->
-      <div class=" bg-slate-200 rounded-lg w-96 min-w-96 flex flex-col min-h-full">
-        <div class="flex items-center justify-between px-4 my-1">
-          <h1 class="text-2xl" v-text="'{{ Column Name }}'"></h1>
-          <fwb-dropdown placement="bottom">
-            <template #trigger>
-              <EllipsisHorizontalIcon class="w-7 h-7 cursor-pointer" />
-            </template>
-            <nav class="text-sm text-gray-700 dark:text-gray-200 *:cursor-pointer">
-              <fwb-button href="#" color="alternative"
-                class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full">
-                <template #prefix>
-                  <PencilSquareIcon class="w-5 h-5" />
-                </template>
-                <span>Rename</span>
-              </fwb-button>
-              <fwb-button href="#" color="alternative"
-                class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full">
-                <template #prefix>
-                  <TrashIcon class="w-5 h-5" />
-                </template>
-                <span>Delete</span>
-              </fwb-button>
-            </nav>
-          </fwb-dropdown>
-        </div>
-
-        <div class="flex-1 flex flex-col gap-2 px-4 my-1 overflow-scroll *:rounded-lg *:p-4">
-          <div class="bg-white text-black ">Lorem ipsum dolor sit
-            amet consectetur
-            adipisicing
-            elit. Ullam
-            accusantium
-            reiciendis veritatis.</div>
-          <div class="bg-white text-black">2</div>
-          <div class="bg-white text-black">3</div>
-          <div class="bg-white text-black">1</div>
-          <div class="bg-white text-black">2</div>
-          <div class="bg-white text-black">3</div>
-          <div class="bg-white text-black">1</div>
-          <div class="bg-white text-black">2</div>
-          <div class="bg-white text-black">3</div>
-          <div class="bg-white text-black">1</div>
-          <div class="bg-white text-black">2</div>
-          <div class="bg-white text-black">3</div>
-          <div class="bg-white text-black">3</div>
-          <div class="bg-white text-black">3</div>
-          <div class="bg-white text-black">3</div>
-          <div class="bg-white text-black">3</div>
-          <div class="bg-white text-black">3</div>
-          <div class="bg-white text-black">3</div>
-          <div class="bg-white text-black">3</div>
+          <div v-for="(task) in column.tasks" :key="task.id" class="bg-white text-black h-20 overflow-scroll">
+            <h2 class="text-gray-700 italic">{{ task.title }}</h2>
+            <p>{{ task.description }}</p>
+          </div>
         </div>
 
         <div>
@@ -325,9 +140,10 @@ const scrollRight = () => {
         </button>
       </div>
     </div>
-
-
   </div>
 
+  <div v-else class="flex-1 flex items-center justify-center">
+    <fwb-spinner size="12" />
+  </div>
 
 </template>

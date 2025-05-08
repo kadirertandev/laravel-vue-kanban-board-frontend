@@ -25,7 +25,7 @@ export interface LoginForm {
   password: string;
 }
 
-export interface Processing {
+export interface AuthProcessing {
   login: boolean;
   register: boolean;
 }
@@ -35,14 +35,36 @@ export interface Board {
   title: string;
   description: string;
   createdAt: string;
+  columns?: Column[];
+}
+
+export interface Column {
+  id: number;
+  title: string;
+  position: number;
+  createdAt: string;
+  tasks?: Task[];
+  relations: [board_id?: number];
+}
+
+export interface Task {
+  id: number;
+  title: string;
+  description: string;
+  position: number;
+  createdAt: string;
+  relations: [column_id?: number];
 }
 
 export interface BoardProcessing {
   getBoards: boolean;
+  getBoard: boolean;
   create: boolean;
+  update: boolean;
+  delete: boolean;
 }
 
-export interface CreateBoardForm {
+export interface BoardForm {
   title: string;
   description: string;
 }

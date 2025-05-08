@@ -4,7 +4,7 @@ import router from "@/router";
 import type {
   CustomError,
   LoginForm,
-  Processing,
+  AuthProcessing,
   RegisterForm,
   User,
 } from "@/types";
@@ -17,7 +17,7 @@ export const useAuthStore = defineStore(
   () => {
     const user = ref<User | null>(null);
     const isLoggedIn = ref<boolean>(false);
-    const processing = reactive<Processing>({
+    const processing = reactive<AuthProcessing>({
       login: false,
       register: false,
     });
