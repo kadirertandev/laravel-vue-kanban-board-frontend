@@ -38,24 +38,6 @@ export interface Board {
   columns?: Column[];
 }
 
-export interface Column {
-  id: number;
-  title: string;
-  description: string;
-  position: number;
-  createdAt: string;
-  tasks?: Task[];
-  relations: [board_id?: number];
-}
-
-export interface Task {
-  id: number;
-  description: string;
-  position: number;
-  createdAt: string;
-  relations: [column_id?: number];
-}
-
 export interface BoardProcessing {
   getBoards: boolean;
   getBoard: boolean;
@@ -67,4 +49,33 @@ export interface BoardProcessing {
 export interface BoardForm {
   title: string;
   description: string;
+}
+
+export interface Column {
+  id: number;
+  title: string;
+  description: string;
+  position: number;
+  createdAt: string;
+  tasks?: Task[];
+  relations: { board_id?: number };
+}
+
+export interface ColumnProcessing {
+  create: boolean;
+  update: boolean;
+  delete: boolean;
+}
+
+export interface ColumnForm {
+  title: string;
+  description: string;
+}
+
+export interface Task {
+  id: number;
+  description: string;
+  position: number;
+  createdAt: string;
+  relations: [column_id?: number];
 }

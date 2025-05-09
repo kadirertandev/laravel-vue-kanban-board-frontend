@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import Modal from '../../Modal.vue';
 import { reactive } from "vue"
-import type { CreateBoardForm, CustomError } from "@/types"
+import type { BoardForm, CustomError } from "@/types"
 import FormInput from "@/components/FormInput.vue"
 import SubmitButton from "@/components/SubmitButton.vue"
 import { useBoardStore } from "@/stores/board.ts"
 import { useModalStore } from "@/stores/modal.ts"
 import { useAbortController } from "@/composables/useAbortController"
+import type { AxiosError } from 'axios';
 
 const boardStore = useBoardStore();
 const modalStore = useModalStore();
@@ -15,7 +16,7 @@ const initialCreateBoardForm = () => ({
   title: "",
   description: ""
 });
-const createBoardForm = reactive<CreateBoardForm>(initialCreateBoardForm());
+const createBoardForm = reactive<BoardForm>(initialCreateBoardForm());
 
 const initialError = () => ({
   status: null,

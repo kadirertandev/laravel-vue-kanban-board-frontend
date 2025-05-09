@@ -19,7 +19,9 @@ onMounted(() => {
     <div class="mb-2 px-4">
       <fwb-button @click="modalStore.openModal('create-board')" color="dark" class="cursor-pointer">Create
         Board</fwb-button>
-      <CreateBoardModal />
+      <Teleport to="#modals">
+        <CreateBoardModal />
+      </Teleport>
     </div>
 
     <div v-if="boardStore.processing.getBoards" class="flex-1 flex items-center justify-center">
