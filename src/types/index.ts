@@ -41,6 +41,7 @@ export interface Board {
 export interface Column {
   id: number;
   title: string;
+  description: string;
   position: number;
   createdAt: string;
   tasks?: Task[];
@@ -49,7 +50,6 @@ export interface Column {
 
 export interface Task {
   id: number;
-  title: string;
   description: string;
   position: number;
   createdAt: string;

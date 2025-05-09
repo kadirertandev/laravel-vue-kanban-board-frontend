@@ -93,8 +93,13 @@ watchEffect(() => {
       <div v-for="(column) in boardStore.board?.columns" :key="column.id"
         class="bg-slate-200 rounded-lg w-96 min-w-96 flex flex-col min-h-full">
         <div class="flex items-center justify-between px-4 my-1">
-          <h1 class="text-2xl">{{ column.title }}</h1>
-          <fwb-dropdown placement="bottom">
+          <div>
+            <h1 class="text-2xl">{{ column.title }}</h1>
+            <p class="text-xs min-h-8 overflow-hidden line-clamp-2 hover:line-clamp-none hover:h-min">
+              {{ column.description }}
+            </p>
+          </div>
+          <fwb-dropdown placement="bottom" class="self-start">
             <template #trigger>
               <EllipsisHorizontalIcon class="w-7 h-7 cursor-pointer" />
             </template>
@@ -119,8 +124,7 @@ watchEffect(() => {
 
         <div class="flex-1 flex flex-col gap-2 px-4 my-1 overflow-scroll *:rounded-lg *:p-4">
           <div v-for="(task) in column.tasks" :key="task.id" class="bg-white text-black h-20 overflow-scroll">
-            <h2 class="text-gray-700 italic">{{ task.title }}</h2>
-            <p>{{ task.description }}</p>
+            <p class="text-gray-700 italic">{{ task.description }}</p>
           </div>
         </div>
 
