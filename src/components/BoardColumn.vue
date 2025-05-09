@@ -3,7 +3,6 @@
   import {
     EllipsisHorizontalIcon,
     PencilSquareIcon,
-    PlusIcon,
     TrashIcon
   } from '@heroicons/vue/24/solid';
   import {
@@ -14,6 +13,8 @@
   import { useModalStore } from '@/stores/modal';
   import { useBoardStore } from '@/stores/board';
   import ConfirmDeleteColumnModal from './modals/column/ConfirmDeleteColumnModal.vue';
+  import ColumnTask from '@/components/ColumnTask.vue';
+  import ColumnAddTask from '@/components/ColumnAddTask.vue';
 
   const props = defineProps<{
     column: Column
@@ -69,16 +70,9 @@
       </div>
 
       <div class="flex-1 flex flex-col gap-2 px-4 my-1 overflow-scroll *:rounded-lg *:p-4">
-        <div v-for="(task) in column.tasks" :key="task.id" class="bg-white text-black h-20 overflow-scroll">
-          <p class="text-gray-700 italic">{{ task.description }}</p>
-        </div>
+        <ColumnTask v-for="(task) in column.tasks" :key="task.id" :task="task" :column="column" />
       </div>
 
-      <div>
-        <button class="w-full flex items-center gap-2 p-4 cursor-pointer hover:bg-slate-300 rounded-b-lg">
-          <PlusIcon class="w-6 h-6" />
-          <span>Add Task</span>
-        </button>
-      </div>
+      <ColumnAddTask :column="column" />
     </div>
   </template>

@@ -79,3 +79,13 @@ export interface Task {
   createdAt: string;
   relations: [column_id?: number];
 }
+
+export interface TaskProcessing {
+  create: boolean;
+  update: boolean;
+  delete: boolean;
+}
+
+export interface TaskForm {
+  description: string;
+}
