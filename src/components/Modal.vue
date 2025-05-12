@@ -7,8 +7,14 @@ import { useFocusTrap } from '@vueuse/integrations/useFocusTrap'
 
 const props = defineProps({
   title: String,
-  name: String,
-  onModalClose: Function
+  name: {
+    type: String,
+    required: true
+  },
+  onModalClose: {
+    type: Function,
+    default: () => { }
+  }
 })
 
 const modalStore = useModalStore();

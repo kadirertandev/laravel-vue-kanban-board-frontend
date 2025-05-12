@@ -16,14 +16,9 @@ const modalStore = useModalStore();
 const onDeleteConfirm = () => {
   boardStore.deleteBoard(props.board.id, () => modalStore.closeModal("delete-board"));
 }
-
-const onModalClose = () => {
-
-}
 </script>
 <template>
-  <Modal :title="`Delete Board - \'${props.board.title}\'`" :name="'delete-board-' + board.id"
-    :onModalClose="onModalClose">
+  <Modal :title="`Delete Board - \'${props.board.title}\'`" :name="'delete-board-' + board.id">
     <div class="space-y-4 flex flex-col items-center">
       <h1 class="text-lg text-black font-light">Are you sure you want to delete this board?</h1>
       <div class="flex items-center justify-end gap-2 *:cursor-pointer">

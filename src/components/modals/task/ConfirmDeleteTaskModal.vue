@@ -22,14 +22,9 @@ const onDeleteConfirm = () => {
     () => modalStore.closeModal('delete-task-' + props.task.id)
   )
 }
-
-const onModalClose = () => {
-
-}
 </script>
 <template>
-  <Modal :title="`Delete Task - \'${props.task.description}\'`" :name="'delete-task-' + props.task.id"
-    :onModalClose="onModalClose">
+  <Modal :title="`Delete Task - \'${props.task.description}\'`" :name="'delete-task-' + props.task.id">
     <div class="space-y-4 flex flex-col items-center">
       <h1 class="text-lg text-black font-light">Are you sure you want to delete this task?</h1>
       <div class="flex items-center justify-end gap-2 *:cursor-pointer">

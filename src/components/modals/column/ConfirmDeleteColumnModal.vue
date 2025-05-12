@@ -20,14 +20,9 @@ const onDeleteConfirm = () => {
     () => modalStore.closeModal('delete-column-' + props.column.id)
   )
 }
-
-const onModalClose = () => {
-
-}
 </script>
 <template>
-  <Modal :title="`Delete Column - \'${props.column.title}\'`" :name="'delete-column-' + props.column.id"
-    :onModalClose="onModalClose">
+  <Modal :title="`Delete Column - \'${props.column.title}\'`" :name="'delete-column-' + props.column.id">
     <div class="space-y-4 flex flex-col items-center">
       <h1 class="text-lg text-black font-light">Are you sure you want to delete this column?</h1>
       <div class="flex items-center justify-end gap-2 *:cursor-pointer">
