@@ -31,19 +31,23 @@ export const useBoardStore = defineStore("board", () => {
     }
   };
 
+  const fetchBoardById = async (id: number) => {
+    const response = await axiosInstance.get(`/boards/${id}`, {
+      params: {
+        withColumns: true,
+        withColumnTasks: true,
+        withColumnBoard: true,
+      },
+    });
+
+    return response.data.data;
+  };
+
   const getBoard = async (id: number) => {
     processing.getBoard = true;
 
     try {
-      const response = await axiosInstance.get(`/boards/${id}`, {
-        params: {
-          withColumns: true,
-          withColumnTasks: true,
-          withColumnBoard: true,
-        },
-      });
-
-      board.value = response.data.data;
+      board.value = await fetchBoardById(id);
     } catch (err) {
       console.error(err);
     } finally {
@@ -92,13 +96,14 @@ export const useBoardStore = defineStore("board", () => {
         signal: controller.signal,
       });
 
-      if (callback) callback();
-
       $toast.success("Board updated", {
         position: "top-right",
       });
 
-      await getBoard(id);
+      board.value!.title = payload.title;
+      board.value!.description = payload.description;
+
+      if (callback) callback(payload);
     } catch (err) {
       Object.assign(error, err);
     } finally {

@@ -11,27 +11,19 @@
   } from 'flowbite-vue'
   import EditColumnModal from './modals/column/EditColumnModal.vue';
   import { useModalStore } from '@/stores/modal';
-  import { useBoardStore } from '@/stores/board';
   import ConfirmDeleteColumnModal from './modals/column/ConfirmDeleteColumnModal.vue';
   import ColumnTask from '@/components/ColumnTask.vue';
   import ColumnAddTask from '@/components/ColumnAddTask.vue';
+  import { useTemplateRef } from "vue"
+  import { useVerticalScroll } from '@/composables/useVerticalScroll';
 
   const props = defineProps<{
     column: Column
   }>()
 
   const modalStore = useModalStore();
-  const boardStore = useBoardStore();
-
-  const handleColumnUpdate = () => {
-    modalStore.closeModal('edit-column-' + props.column.id)
-    boardStore.getBoard(props.column.relations.board_id!)
-  }
-
-  const handleColumnDelete = () => {
-    modalStore.closeModal('delete-column-' + props.column.id)
-    boardStore.getBoard(props.column.relations.board_id!)
-  }
+  const columnTaskContainer = useTemplateRef("columnTaskContainer")
+  const { scrollTop, scrollBottom } = useVerticalScroll(columnTaskContainer);
 </script>
   <template>
     <div class="bg-slate-200 rounded-lg w-96 min-w-96 flex flex-col min-h-full">
@@ -64,15 +56,15 @@
           </nav>
         </fwb-dropdown>
         <Teleport to="#modals">
-          <EditColumnModal v-if="column" :column="column" @column-updated="handleColumnUpdate" />
-          <ConfirmDeleteColumnModal v-if="column" :column="column" @column-deleted="handleColumnDelete" />
+          <EditColumnModal v-if="column" :column="column" />
+          <ConfirmDeleteColumnModal v-if="column" :column="column" />
         </Teleport>
       </div>
 
-      <div class="flex-1 flex flex-col gap-2 px-4 my-1 overflow-scroll *:rounded-lg *:p-4">
+      <div class="flex-1 flex flex-col gap-2 px-4 my-1 overflow-scroll *:rounded-lg" ref="columnTaskContainer">
         <ColumnTask v-for="(task) in column.tasks" :key="task.id" :task="task" :column="column" />
       </div>
 
-      <ColumnAddTask :column="column" />
+      <ColumnAddTask :column="column" @scroll-bottom="scrollBottom" />
     </div>
   </template>

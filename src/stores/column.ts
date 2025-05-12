@@ -3,6 +3,7 @@ import { defineStore } from "pinia";
 import { reactive } from "vue";
 import type { ColumnProcessing, ColumnForm, CustomError } from "@/types";
 import { useToast } from "vue-toast-notification";
+import { useBoardStore } from "./board";
 
 export const useColumnStore = defineStore("column", () => {
   const processing = reactive<ColumnProcessing>({
@@ -12,6 +13,32 @@ export const useColumnStore = defineStore("column", () => {
   });
 
   const $toast = useToast();
+  const boardStore = useBoardStore();
+
+  const getColumns = async (boardId: number) => {
+    const response = await axiosInstance.get(`/boards/${boardId}/columns`, {
+      params: {
+        withColumnTasks: true,
+        withColumnBoard: true,
+      },
+    });
+
+    return response.data.data;
+  };
+
+  const getColumn = async (boardId: number, columnId: number) => {
+    const response = await axiosInstance.get(
+      `/boards/${boardId}/columns/${columnId}`,
+      {
+        params: {
+          withColumnTasks: true,
+          withColumnBoard: true,
+        },
+      }
+    );
+
+    return response.data.data;
+  };
 
   const createColumn = async (
     boardId: number,
@@ -28,6 +55,8 @@ export const useColumnStore = defineStore("column", () => {
       });
 
       if (callback) callback();
+
+      boardStore.board!.columns! = await getColumns(boardId);
 
       $toast.success("Column created", {
         position: "top-right",
@@ -54,7 +83,10 @@ export const useColumnStore = defineStore("column", () => {
         signal: controller.signal,
       });
 
-      if (callback) callback();
+      boardStore.board!.columns![id].title = payload.title;
+      boardStore.board!.columns![id].description = payload.description;
+
+      if (callback) callback(payload);
 
       $toast.success("Column updated", {
         position: "top-right",
@@ -77,6 +109,8 @@ export const useColumnStore = defineStore("column", () => {
       await axiosInstance.delete(`/boards/${boardId}/columns/${id}`);
 
       if (callback) callback();
+
+      delete boardStore.board!.columns![id];
 
       $toast.success("Column deleted", {
         position: "top-right",

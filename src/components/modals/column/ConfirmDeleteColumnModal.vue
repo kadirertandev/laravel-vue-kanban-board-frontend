@@ -10,8 +10,6 @@ const props = defineProps<{
   column: Column
 }>()
 
-const emit = defineEmits(["columnDeleted"])
-
 const columnStore = useColumnStore();
 const modalStore = useModalStore();
 
@@ -19,7 +17,8 @@ const onDeleteConfirm = () => {
   columnStore.deleteColumn(
     props.column.relations.board_id!,
     props.column.id,
-    () => emit("columnDeleted"))
+    () => modalStore.closeModal('delete-column-' + props.column.id)
+  )
 }
 
 const onModalClose = () => {

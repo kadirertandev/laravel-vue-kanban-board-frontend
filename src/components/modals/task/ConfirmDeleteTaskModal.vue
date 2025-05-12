@@ -11,8 +11,6 @@ const props = defineProps<{
   column: Column
 }>()
 
-const emit = defineEmits(["taskDeleted"])
-
 const taskStore = useTaskStore();
 const modalStore = useModalStore();
 
@@ -21,7 +19,8 @@ const onDeleteConfirm = () => {
     props.column.relations.board_id!,
     props.column.id!,
     props.task.id,
-    () => emit("taskDeleted"))
+    () => modalStore.closeModal('delete-task-' + props.task.id)
+  )
 }
 
 const onModalClose = () => {

@@ -34,7 +34,12 @@ const controller = useAbortController();
 
 const handleFormSubmit = async () => {
   await boardStore.updateBoard(props.board.id, updateBoardForm, error, controller,
-    () => modalStore.closeModal('edit-board'))
+    (board: BoardForm) => {
+      modalStore.closeModal('edit-board-' + props.board.id);
+
+      updateBoardForm.title = board.title
+      updateBoardForm.description = board.description
+    })
 }
 
 const onModalClose = () => {
@@ -43,7 +48,8 @@ const onModalClose = () => {
 }
 </script>
 <template>
-  <Modal :title="`Edit Board - \'${props.board.title}\'`" name="edit-board" :onModalClose="onModalClose">
+  <Modal :title="`Edit Board - \'${props.board.title}\'`" :name="'edit-board-' + props.board.id"
+    :onModalClose="onModalClose">
     <form @submit.prevent="handleFormSubmit" class="space-y-4" novalidate>
       <div>
         <FormInput labelclass="text-black" type="text" v-model="updateBoardForm.title" label="Board Title"

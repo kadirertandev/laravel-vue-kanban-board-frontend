@@ -11,14 +11,13 @@ import FormError from './FormError.vue';
 import SubmitButton from './SubmitButton.vue';
 import { useModalStore } from '@/stores/modal';
 import ConfirmDeleteTaskModal from './modals/task/ConfirmDeleteTaskModal.vue';
-import { useBoardStore } from '@/stores/board';
 
 const props = defineProps<{
   task: Task,
   column: Column
 }>()
 
-const isAdding = ref(false)
+const isEditing = ref(false)
 
 const formContainerRef = useTemplateRef("formContainer")
 onClickOutside(formContainerRef, () => {
@@ -27,7 +26,6 @@ onClickOutside(formContainerRef, () => {
 
 const taskStore = useTaskStore();
 const modalStore = useModalStore();
-const boardStore = useBoardStore();
 
 const initialUpdateTaskForm = () => ({
   description: props.task.description
@@ -52,37 +50,34 @@ const handleFormSubmit = async () => {
     updateTaskForm,
     error,
     controller,
-    () => {
+    (task: TaskForm) => {
       reset();
-      boardStore.getBoard(props.column.relations.board_id!)
+      updateTaskForm.description = task.description;
     }
   )
-}
-
-const handleTaskDelete = () => {
-  modalStore.closeModal('delete-task-' + props.task.id)
-  boardStore.getBoard(props.column.relations.board_id!)
 }
 
 const reset = () => {
   Object.assign(updateTaskForm, initialUpdateTaskForm())
   Object.assign(error, initialError())
-  isAdding.value = false;
+  isEditing.value = false;
 }
-
-
 </script>
 <template>
-  <div class="bg-white h-20 min-h-20 overflow-scroll" ref="formContainer">
-    <p v-if="!isAdding" class="text-gray-700 italic flex items-start justify-between group">
-      <span class="flex-1">{{ task.description }}</span>
-    <div class="flex flex-col">
-      <PencilIcon @click="isAdding = true" class="w-6 h-6 hidden group-hover:block cursor-pointer" />
-      <TrashIcon @click="modalStore.openModal('delete-task-' + task.id)"
-        class="w-6 h-6 text-red-500 hidden group-hover:block cursor-pointer" />
+  <div class="bg-white h-20 min-h-20 overflow-scroll max-w-full">
+    <div v-if="!isEditing" class="text-gray-700 italic flex justify-between group p-4 h-full w-full space-x-2">
+      <div
+        class="flex-1 max-h-20 overflow-hidden group-hover:overflow-y-auto overflow-x-hidden break-words whitespace-pre-wrap pr-2">
+        {{ task.description }}
+      </div>
+      <div class="flex flex-col flex-shrink-0 items-end">
+        <PencilIcon @click="isEditing = true" class="w-6 h-6 hidden group-hover:block cursor-pointer" />
+        <TrashIcon @click="modalStore.openModal('delete-task-' + task.id)"
+          class="w-6 h-6 text-red-500 hidden group-hover:block cursor-pointer" />
+      </div>
     </div>
-    </p>
-    <div v-else>
+
+    <div v-else ref="formContainer" class="h-full p-4">
       <form @submit.prevent="handleFormSubmit" novalidate>
         <fwb-input class="gap-2" v-model="updateTaskForm.description" placeholder="task description" size="sm">
           <template #suffix>
@@ -96,6 +91,6 @@ const reset = () => {
     </div>
   </div>
   <Teleport to="#modals">
-    <ConfirmDeleteTaskModal :task="task" :column="column" @task-deleted="handleTaskDelete" />
+    <ConfirmDeleteTaskModal :task="task" :column="column" />
   </Teleport>
 </template>

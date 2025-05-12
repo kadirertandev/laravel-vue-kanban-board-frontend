@@ -14,11 +14,11 @@ import { onClickOutside } from '@vueuse/core';
 const props = defineProps<{
   board: Board
 }>()
-const emit = defineEmits(["scrollRight", "columnCreated"])
+const emit = defineEmits(["scrollRight"])
 
-const isAdding = ref(false)
-watch(isAdding, (newIsAdding) => {
-  if (newIsAdding) emit("scrollRight")
+const isCreating = ref(false)
+watch(isCreating, (newIsCreating) => {
+  if (newIsCreating) emit("scrollRight")
 })
 
 const formContainerRef = useTemplateRef("formContainer")
@@ -47,19 +47,21 @@ const controller = useAbortController();
 const handleFormSubmit = async () => {
   await columnStore.createColumn(props.board.id, createColumnForm, error, controller, () => {
     reset();
-    emit("columnCreated")
+    setTimeout(() => {
+      emit("scrollRight");
+    }, 500);
   })
 }
 
 const reset = () => {
   Object.assign(createColumnForm, initialCreateColumnForm())
   Object.assign(error, initialError())
-  isAdding.value = false;
+  isCreating.value = false;
 }
 </script>
 <template>
   <div class="bg-slate-200 rounded-lg w-96 min-w-96 h-fit">
-    <button v-if="!isAdding" @click="isAdding = true"
+    <button v-if="!isCreating" @click="isCreating = true"
       class="flex items-center gap-2 w-full p-4 rounded-lg cursor-pointer hover:bg-slate-300 ">
       <PlusIcon class="w-6 h-6" />
       <span>Add Column</span>

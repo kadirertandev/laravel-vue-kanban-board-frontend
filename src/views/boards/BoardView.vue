@@ -28,13 +28,8 @@ const boardStore = useBoardStore();
 const modalStore = useModalStore();
 const route = useRoute();
 
-const getBoard = async (scrlRight?: boolean) => {
-  await boardStore.getBoard(Number(route.params.boardId))
-  if (scrlRight) scrollRight()
-};
-
 watchEffect(() => {
-  getBoard()
+  boardStore.getBoard(Number(route.params.boardId))
 })
 
 </script>
@@ -70,7 +65,7 @@ watchEffect(() => {
             </fwb-button>
           </template>
           <nav class="text-sm text-gray-700 dark:text-gray-200 *:cursor-pointer">
-            <fwb-button @click="modalStore.openModal('edit-board')" color="alternative"
+            <fwb-button @click="modalStore.openModal('edit-board-' + boardStore.board?.id)" color="alternative"
               class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full">
               <template #prefix>
                 <PencilSquareIcon class="w-5 h-5" />
@@ -78,7 +73,7 @@ watchEffect(() => {
               <span>Edit</span>
             </fwb-button>
 
-            <fwb-button @click="modalStore.openModal('delete-board')" color="alternative"
+            <fwb-button @click="modalStore.openModal('delete-board-' + boardStore.board?.id)" color="alternative"
               class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full">
               <template #prefix>
                 <TrashIcon class="w-5 h-5" />
@@ -101,8 +96,7 @@ watchEffect(() => {
       <BoardColumn v-for="(column) in boardStore.board?.columns" :column="column" :key="column.id" />
       <!-- Columns End -->
 
-      <BoardAddColumn v-if="boardStore.board" :board="boardStore.board" @scroll-right="scrollRight"
-        @column-created="getBoard(true)" />
+      <BoardAddColumn v-if="boardStore.board" :board="boardStore.board" @scroll-right="scrollRight" />
     </div>
   </div>
 

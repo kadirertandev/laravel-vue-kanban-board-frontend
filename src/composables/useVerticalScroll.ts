@@ -1,25 +1,25 @@
 import type { Ref } from "vue";
 
-export function useHorizontalScroll(elementRef: Ref<HTMLElement | null>) {
-  const scrollLeft = () => {
+export function useVerticalScroll(elementRef: Ref<HTMLElement | null>) {
+  const scrollTop = () => {
     elementRef.value?.scroll({
-      left: 0,
+      top: 0,
       behavior: "smooth",
     });
   };
 
-  const scrollRight = () => {
+  const scrollBottom = () => {
     const el = elementRef.value;
     if (el) {
       el.scroll({
-        left: el.scrollWidth - el.clientWidth,
+        top: el.scrollHeight - el.clientHeight,
         behavior: "smooth",
       });
     }
   };
 
   return {
-    scrollLeft,
-    scrollRight,
+    scrollTop,
+    scrollBottom,
   };
 }

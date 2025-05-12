@@ -3,6 +3,7 @@ import { defineStore } from "pinia";
 import { reactive } from "vue";
 import type { TaskProcessing, TaskForm, CustomError } from "@/types";
 import { useToast } from "vue-toast-notification";
+import { useBoardStore } from "./board";
 
 export const useTaskStore = defineStore("task", () => {
   const processing = reactive<TaskProcessing>({
@@ -12,6 +13,23 @@ export const useTaskStore = defineStore("task", () => {
   });
 
   const $toast = useToast();
+  const boardStore = useBoardStore();
+
+  const getTasks = async (boardId: number, columnId: number) => {
+    const response = await axiosInstance.get(
+      `/boards/${boardId}/columns/${columnId}/tasks`
+    );
+
+    return response.data.data;
+  };
+
+  const getTask = async (boardId: number, columnId: number, id: number) => {
+    const response = await axiosInstance.get(
+      `/boards/${boardId}/columns/${columnId}/tasks/${id}`
+    );
+
+    return response.data.data;
+  };
 
   const createTask = async (
     boardId: number,
@@ -33,6 +51,10 @@ export const useTaskStore = defineStore("task", () => {
       );
 
       if (callback) callback();
+
+      let tasks = await getTasks(boardId, columnId);
+
+      boardStore.board!.columns![columnId].tasks = tasks;
 
       $toast.success("Task created", {
         position: "top-right",
@@ -64,7 +86,10 @@ export const useTaskStore = defineStore("task", () => {
         }
       );
 
-      if (callback) callback();
+      boardStore.board!.columns![columnId].tasks![id].description =
+        payload.description;
+
+      if (callback) callback(payload);
 
       $toast.success("Task updated", {
         position: "top-right",
@@ -90,6 +115,8 @@ export const useTaskStore = defineStore("task", () => {
       );
 
       if (callback) callback();
+
+      delete boardStore.board!.columns![columnId].tasks![id];
 
       $toast.success("Task deleted", {
         position: "top-right",

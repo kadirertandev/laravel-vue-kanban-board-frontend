@@ -7,14 +7,14 @@ import { useColumnStore } from "@/stores/column.ts"
 import { useAbortController } from "@/composables/useAbortController"
 import type { ColumnForm, Column, CustomError } from '@/types';
 import type { AxiosError } from 'axios';
+import { useModalStore } from "@/stores/modal.ts"
 
 const props = defineProps<{
   column: Column
 }>()
 
-const emit = defineEmits(["columnUpdated"])
-
 const columnStore = useColumnStore();
+const modalStore = useModalStore();
 
 const initialUpdateColumnForm = () => ({
   title: props.column.title,
@@ -39,7 +39,12 @@ const handleFormSubmit = () => {
     updateColumnForm,
     error,
     controller,
-    () => emit("columnUpdated")
+    (column: ColumnForm) => {
+      modalStore.closeModal('edit-column-' + props.column.id)
+
+      updateColumnForm.title = column.title
+      updateColumnForm.description = column.description
+    }
   )
 }
 

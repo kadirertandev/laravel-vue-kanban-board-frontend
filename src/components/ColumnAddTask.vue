@@ -9,13 +9,13 @@ import { reactive, ref, useTemplateRef } from 'vue';
 import SubmitButton from "@/components/SubmitButton.vue"
 import { FwbInput } from 'flowbite-vue'
 import FormError from './FormError.vue';
-import { useBoardStore } from '@/stores/board';
 
 const props = defineProps<{
   column: Column
 }>()
+const emit = defineEmits(["scrollBottom"])
 
-const isAdding = ref(false)
+const isCreating = ref(false)
 
 const formContainerRef = useTemplateRef("formContainer")
 onClickOutside(formContainerRef, () => {
@@ -23,7 +23,6 @@ onClickOutside(formContainerRef, () => {
 })
 
 const taskStore = useTaskStore();
-const boardStore = useBoardStore();
 
 const initialCreateTaskForm = () => ({
   description: ""
@@ -49,7 +48,9 @@ const handleFormSubmit = async () => {
     controller,
     () => {
       reset();
-      boardStore.getBoard(props.column.relations.board_id!)
+      setTimeout(() => {
+        emit("scrollBottom");
+      }, 500);
     }
   )
 }
@@ -57,13 +58,13 @@ const handleFormSubmit = async () => {
 const reset = () => {
   Object.assign(createTaskForm, initialCreateTaskForm())
   Object.assign(error, initialError())
-  isAdding.value = false;
+  isCreating.value = false;
 }
 
 </script>
 <template>
   <div>
-    <button v-if="!isAdding" @click="isAdding = true"
+    <button v-if="!isCreating" @click="isCreating = true"
       class="w-full flex items-center gap-2 p-4 cursor-pointer hover:bg-slate-300 rounded-b-lg">
       <PlusIcon class="w-6 h-6" />
       <span>Add Task</span>
