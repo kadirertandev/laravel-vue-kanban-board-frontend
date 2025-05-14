@@ -37,6 +37,7 @@ export const useBoardStore = defineStore("board", () => {
         withColumns: true,
         withColumnTasks: true,
         withColumnBoard: true,
+        withTaskColumn: true,
       },
     });
 

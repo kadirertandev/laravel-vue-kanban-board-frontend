@@ -1,7 +1,13 @@
 import axiosInstance from "@/lib/axios";
 import { defineStore } from "pinia";
 import { reactive } from "vue";
-import type { TaskProcessing, TaskForm, CustomError } from "@/types";
+import type {
+  TaskProcessing,
+  TaskForm,
+  CustomError,
+  Task,
+  Column,
+} from "@/types";
 import { useToast } from "vue-toast-notification";
 import { useBoardStore } from "./board";
 
@@ -10,6 +16,7 @@ export const useTaskStore = defineStore("task", () => {
     create: false,
     update: false,
     delete: false,
+    move: false,
   });
 
   const $toast = useToast();
@@ -17,7 +24,12 @@ export const useTaskStore = defineStore("task", () => {
 
   const getTasks = async (boardId: number, columnId: number) => {
     const response = await axiosInstance.get(
-      `/boards/${boardId}/columns/${columnId}/tasks`
+      `/boards/${boardId}/columns/${columnId}/tasks`,
+      {
+        params: {
+          withTaskColumn: true,
+        },
+      }
     );
 
     return response.data.data;
@@ -54,7 +66,10 @@ export const useTaskStore = defineStore("task", () => {
 
       let tasks = await getTasks(boardId, columnId);
 
-      boardStore.board!.columns![columnId].tasks = tasks;
+      let column = boardStore.board!.columns?.find(
+        (column) => column.id === columnId
+      );
+      column!.tasks = tasks;
 
       $toast.success("Task created", {
         position: "top-right",
@@ -86,7 +101,9 @@ export const useTaskStore = defineStore("task", () => {
         }
       );
 
-      boardStore.board!.columns![columnId].tasks![id].description =
+      boardStore
+        .board!.columns!.find((col) => col.id === columnId)!
+        .tasks!.find((task) => task.id === id)!.description =
         payload.description;
 
       if (callback) callback(payload);
@@ -116,7 +133,10 @@ export const useTaskStore = defineStore("task", () => {
 
       if (callback) callback();
 
-      delete boardStore.board!.columns![columnId].tasks![id];
+      let column = boardStore.board!.columns?.find(
+        (column) => column.id === columnId
+      );
+      column!.tasks = column!.tasks!.filter((task) => task.id !== id);
 
       $toast.success("Task deleted", {
         position: "top-right",
@@ -128,10 +148,54 @@ export const useTaskStore = defineStore("task", () => {
     }
   };
 
+  const moveTask = async (
+    boardId: number,
+    columnId: number,
+    task: Task,
+    fromColumn: number | null,
+    toColumn: Column,
+    position: number,
+    callback?: Function
+  ) => {
+    if (processing.move) return;
+    processing.move = true;
+    try {
+      await axiosInstance.put(
+        `/boards/${boardId}/columns/${columnId}/tasks/${task.id}/move`,
+        {
+          fromColumn: fromColumn,
+          toColumn: toColumn.id,
+          position,
+        }
+      );
+
+      let response = await axiosInstance.get(`/boards/${boardId}/columns`, {
+        params: {
+          withColumnTasks: true,
+          withColumnBoard: true,
+          withTaskColumn: true,
+        },
+      });
+      boardStore.board!.columns = response.data.data;
+
+      if (callback) callback();
+
+      $toast.success("Task moved", {
+        position: "top-right",
+      });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      processing.move = false;
+    }
+  };
+
   return {
     processing,
     createTask,
     updateTask,
     deleteTask,
+    moveTask,
+    getTasks,
   };
 });

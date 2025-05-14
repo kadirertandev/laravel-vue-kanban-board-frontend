@@ -126,8 +126,8 @@ const onChange = (event) => {
     <!-- Board Info End -->
 
     <div ref="column-container" class="flex-1 overflow-scroll flex justify-start gap-4 pb-4">
-      <Draggable v-model="columns" @change="onChange" group="columns" item-key="id" class="flex justify-start gap-4"
-        ghost-class="ghost">
+      <Draggable handle=".column-drag-handle" v-model="columns" @change="onChange" group="columns" item-key="id"
+        class="flex justify-start gap-4" ghost-class="ghost">
         <template #item="{ element }">
           <BoardColumn :column="element" />
         </template>

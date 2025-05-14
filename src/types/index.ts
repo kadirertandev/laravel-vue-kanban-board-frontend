@@ -84,6 +84,7 @@ export interface TaskProcessing {
   create: boolean;
   update: boolean;
   delete: boolean;
+  move: boolean;
 }
 
 export interface TaskForm {

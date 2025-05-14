@@ -2,7 +2,7 @@
 import { useAbortController } from '@/composables/useAbortController';
 import { useTaskStore } from '@/stores/task';
 import type { Column, CustomError, Task, TaskForm } from '@/types';
-import { PencilIcon, TrashIcon } from '@heroicons/vue/24/solid';
+import { Bars2Icon, PencilIcon, TrashIcon } from '@heroicons/vue/24/solid';
 import { onClickOutside } from '@vueuse/core';
 import type { AxiosError } from 'axios';
 import { reactive, ref, useTemplateRef } from 'vue';
@@ -65,7 +65,9 @@ const reset = () => {
 </script>
 <template>
   <div class="bg-white h-20 min-h-20 overflow-scroll max-w-full">
-    <div v-if="!isEditing" class="text-gray-700 italic flex justify-between group p-4 h-full w-full space-x-2">
+    <div v-if="!isEditing"
+      class="text-gray-700 italic flex justify-between items-center group p-4 h-full w-full space-x-2">
+      <Bars2Icon :class="{ 'cursor-pointer': !taskStore.processing.move }" class="w-6 h-full task-drag-handle" />
       <div
         class="flex-1 max-h-20 overflow-hidden group-hover:overflow-y-auto overflow-x-hidden break-words whitespace-pre-wrap pr-2">
         {{ task.description }}
