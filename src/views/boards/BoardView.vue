@@ -11,27 +11,61 @@ import {
   FwbDropdown,
   FwbSpinner
 } from 'flowbite-vue'
-import { useTemplateRef, watchEffect } from 'vue';
+import { useTemplateRef, ref, onMounted, watch } from 'vue';
 import { useHorizontalScroll } from '@/composables/useHorizontalScroll';
 import { useBoardStore } from '@/stores/board';
+import { useColumnStore } from '@/stores/column';
 import { useRoute } from 'vue-router';
 import EditBoardModal from '@/components/modals/board/EditBoardModal.vue';
 import { useModalStore } from '@/stores/modal';
 import ConfirmDeleteBoardModal from '@/components/modals/board/ConfirmDeleteBoardModal.vue';
 import BoardColumn from '@/components/BoardColumn.vue';
 import BoardAddColumn from '@/components/BoardAddColumn.vue';
+import Draggable from 'vuedraggable'
 
 const columnContainer = useTemplateRef("column-container")
 const { scrollLeft, scrollRight } = useHorizontalScroll(columnContainer);
 
 const boardStore = useBoardStore();
+const columnStore = useColumnStore();
 const modalStore = useModalStore();
 const route = useRoute();
 
-watchEffect(() => {
-  boardStore.getBoard(Number(route.params.boardId))
+const columns = ref(null)
+
+onMounted(async () => {
+  await boardStore.getBoard(Number(route.params.boardId))
 })
 
+watch(
+  () => boardStore.board?.columns,
+  (newColumns) => {
+    columns.value = newColumns
+  },
+  { deep: true, immediate: true }
+)
+
+const onChange = (event) => {
+  let item = event.added || event.moved;
+
+  if (!item) return;
+
+  let index = item.newIndex;
+  let prevColumn = columns.value[index - 1];
+  let nextColumn = columns.value[index + 1];
+  let column = columns.value[index];
+  let position = column.position;
+
+  if (prevColumn && nextColumn) {
+    position = (prevColumn.position + nextColumn.position) / 2;
+  } else if (prevColumn) {
+    position = prevColumn.position + 60000;
+  } else if (nextColumn) {
+    position = nextColumn.position / 2;
+  }
+
+  columnStore.moveColumn(boardStore.board.id, column.id, position);
+}
 </script>
 
 <template>
@@ -92,9 +126,12 @@ watchEffect(() => {
     <!-- Board Info End -->
 
     <div ref="column-container" class="flex-1 overflow-scroll flex justify-start gap-4 pb-4">
-      <!-- Columns Start -->
-      <BoardColumn v-for="(column) in boardStore.board?.columns" :column="column" :key="column.id" />
-      <!-- Columns End -->
+      <Draggable v-model="columns" @change="onChange" group="columns" item-key="id" class="flex justify-start gap-4"
+        ghost-class="ghost">
+        <template #item="{ element }">
+          <BoardColumn :column="element" />
+        </template>
+      </Draggable>
 
       <BoardAddColumn v-if="boardStore.board" :board="boardStore.board" @scroll-right="scrollRight" />
     </div>

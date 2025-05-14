@@ -26,7 +26,7 @@
   const { scrollTop, scrollBottom } = useVerticalScroll(columnTaskContainer);
 </script>
   <template>
-    <div class="bg-slate-200 rounded-lg w-96 min-w-96 flex flex-col min-h-full">
+    <div class="bg-slate-200 rounded-lg w-96 min-w-96 flex flex-col h-full max-h-full">
       <div class="flex items-center justify-between px-4 my-1">
         <div>
           <h1 class="text-2xl">{{ column.title }}</h1>
@@ -68,3 +68,12 @@
       <ColumnAddTask :column="column" @scroll-bottom="scrollBottom" />
     </div>
   </template>
+<style scoped>
+.ghost {
+  background-color: #bcc4dad5;
+}
+
+.ghost>div {
+  visibility: hidden;
+}
+</style>

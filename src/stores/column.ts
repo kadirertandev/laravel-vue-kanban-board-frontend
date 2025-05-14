@@ -83,8 +83,11 @@ export const useColumnStore = defineStore("column", () => {
         signal: controller.signal,
       });
 
-      boardStore.board!.columns![id].title = payload.title;
-      boardStore.board!.columns![id].description = payload.description;
+      let column = boardStore.board!.columns?.find(
+        (column) => column.id === id
+      );
+      column!.title = payload.title;
+      column!.description = payload.description;
 
       if (callback) callback(payload);
 
@@ -110,7 +113,9 @@ export const useColumnStore = defineStore("column", () => {
 
       if (callback) callback();
 
-      delete boardStore.board!.columns![id];
+      boardStore.board!.columns = boardStore.board!.columns!.filter(
+        (column) => column.id !== id
+      );
 
       $toast.success("Column deleted", {
         position: "top-right",
@@ -122,10 +127,40 @@ export const useColumnStore = defineStore("column", () => {
     }
   };
 
+  const moveColumn = async (
+    boardId: number,
+    id: number,
+    position: number,
+    callback?: Function
+  ) => {
+    try {
+      await axiosInstance.put(`/boards/${boardId}/columns/${id}/move`, {
+        position,
+      });
+
+      let response = await axiosInstance.get(`/boards/${boardId}/columns`, {
+        params: {
+          withColumnTasks: true,
+          withColumnBoard: true,
+        },
+      });
+      boardStore.board!.columns = response.data.data;
+
+      if (callback) callback();
+
+      $toast.success("Column moved", {
+        position: "top-right",
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return {
     processing,
     createColumn,
     updateColumn,
     deleteColumn,
+    moveColumn,
   };
 });
