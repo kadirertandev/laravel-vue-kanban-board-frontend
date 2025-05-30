@@ -11,8 +11,8 @@ import Logo from "@/components/Logo.vue"
 const auth = useAuthStore();
 
 const loginForm = ref<LoginForm>({
-  email: "",
-  password: ""
+  email: "test@test.com",
+  password: "asdfasdf"
 });
 
 const error = ref<CustomError>({
@@ -37,6 +37,10 @@ const controller = useAbortController();
           <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
             Sign in to your account
           </h1>
+          <div class="text-white bg-gray-700 p-2">
+            <h2 class="text-xl">Test User</h2>
+            <p>Email:test@test.com - Password:asdfasdf</p>
+          </div>
           <form @submit.prevent="auth.login(loginForm, error, controller)" class="space-y-4" novalidate>
             <div>
               <FormInput type="email" v-model="loginForm.email" label="Your email" placeholder="john@doe.com"
