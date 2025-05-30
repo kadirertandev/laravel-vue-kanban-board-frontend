@@ -142,6 +142,7 @@ export const useColumnStore = defineStore("column", () => {
         params: {
           withColumnTasks: true,
           withColumnBoard: true,
+          withTaskColumn: true,
         },
       });
       boardStore.board!.columns = response.data.data;
