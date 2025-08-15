@@ -32,14 +32,7 @@ export const useBoardStore = defineStore("board", () => {
   };
 
   const fetchBoardById = async (id: number) => {
-    const response = await axiosInstance.get(`/boards/${id}`, {
-      params: {
-        withColumns: true,
-        withColumnTasks: true,
-        withColumnBoard: true,
-        withTaskColumn: true,
-      },
-    });
+    const response = await axiosInstance.get(`/boards/${id}`);
 
     return response.data.data;
   };

@@ -9,7 +9,7 @@ import type {
   Column,
 } from "@/types";
 import { useToast } from "vue-toast-notification";
-import { useBoardStore } from "./board";
+import { useColumnStore } from "./column";
 
 export const useTaskStore = defineStore("task", () => {
   const processing = reactive<TaskProcessing>({
@@ -20,7 +20,7 @@ export const useTaskStore = defineStore("task", () => {
   });
 
   const $toast = useToast();
-  const boardStore = useBoardStore();
+  const columnStore = useColumnStore();
 
   const getTasks = async (boardId: number, columnId: number) => {
     const response = await axiosInstance.get(
@@ -66,7 +66,7 @@ export const useTaskStore = defineStore("task", () => {
 
       let tasks = await getTasks(boardId, columnId);
 
-      let column = boardStore.board!.columns?.find(
+      let column = columnStore.columns?.find(
         (column) => column.id === columnId
       );
       column!.tasks = tasks;
@@ -101,8 +101,8 @@ export const useTaskStore = defineStore("task", () => {
         }
       );
 
-      boardStore
-        .board!.columns!.find((col) => col.id === columnId)!
+      columnStore
+        .columns!.find((col) => col.id === columnId)!
         .tasks!.find((task) => task.id === id)!.description =
         payload.description;
 
@@ -133,7 +133,7 @@ export const useTaskStore = defineStore("task", () => {
 
       if (callback) callback();
 
-      let column = boardStore.board!.columns?.find(
+      let column = columnStore.columns?.find(
         (column) => column.id === columnId
       );
       column!.tasks = column!.tasks!.filter((task) => task.id !== id);
@@ -169,14 +169,24 @@ export const useTaskStore = defineStore("task", () => {
         }
       );
 
-      let response = await axiosInstance.get(`/boards/${boardId}/columns`, {
-        params: {
-          withColumnTasks: true,
-          withColumnBoard: true,
-          withTaskColumn: true,
-        },
+      //remove task from column with id fromColumn
+      let fromColumnTWW = columnStore.columns.find(
+        (column) => column.id === fromColumn
+      );
+      fromColumnTWW!.tasks = fromColumnTWW!.tasks?.filter(
+        (t) => t.id !== task.id
+      );
+
+      //add task to column with id toColumn.id and reorder in ascending order by position
+      let toColumnTWW = columnStore.columns.find(
+        (column) => column.id === toColumn.id
+      );
+      toColumnTWW!.tasks?.push({
+        ...task,
+        position,
+        relations: { column_id: toColumn.id },
       });
-      boardStore.board!.columns = response.data.data;
+      toColumnTWW!.tasks?.sort((a, b) => a.position - b.position);
 
       if (callback) callback();
 

@@ -11,7 +11,7 @@ import {
   FwbDropdown,
   FwbSpinner
 } from 'flowbite-vue'
-import { useTemplateRef, ref, onMounted, watch } from 'vue';
+import { useTemplateRef, onMounted } from 'vue';
 import { useHorizontalScroll } from '@/composables/useHorizontalScroll';
 import { useBoardStore } from '@/stores/board';
 import { useColumnStore } from '@/stores/column';
@@ -31,19 +31,10 @@ const columnStore = useColumnStore();
 const modalStore = useModalStore();
 const route = useRoute();
 
-const columns = ref(null)
-
 onMounted(async () => {
   await boardStore.getBoard(Number(route.params.boardId))
+  await columnStore.getColumns(Number(route.params.boardId))
 })
-
-watch(
-  () => boardStore.board?.columns,
-  (newColumns) => {
-    columns.value = newColumns
-  },
-  { deep: true, immediate: true }
-)
 
 const onChange = (event) => {
   let item = event.added || event.moved;
@@ -51,9 +42,9 @@ const onChange = (event) => {
   if (!item) return;
 
   let index = item.newIndex;
-  let prevColumn = columns.value[index - 1];
-  let nextColumn = columns.value[index + 1];
-  let column = columns.value[index];
+  let prevColumn = columnStore.columns[index - 1];
+  let nextColumn = columnStore.columns[index + 1];
+  let column = columnStore.columns[index];
   let position = column.position;
 
   if (prevColumn && nextColumn) {
@@ -125,15 +116,19 @@ const onChange = (event) => {
     </div>
     <!-- Board Info End -->
 
-    <div ref="column-container" class="flex-1 overflow-scroll flex justify-start gap-4 pb-4">
-      <Draggable handle=".column-drag-handle" v-model="columns" @change="onChange" group="columns" item-key="id"
-        class="flex justify-start gap-4" ghost-class="ghost">
+    <div v-show="!columnStore.processing.getColumns" ref="column-container"
+      class="flex-1 overflow-scroll flex justify-start gap-4 pb-4">
+      <Draggable handle=".column-drag-handle" v-model="columnStore.columns" @change="onChange" group="columns"
+        item-key="id" class="flex justify-start gap-4" ghost-class="ghost">
         <template #item="{ element }">
           <BoardColumn :column="element" />
         </template>
       </Draggable>
 
       <BoardAddColumn v-if="boardStore.board" :board="boardStore.board" @scroll-right="scrollRight" />
+    </div>
+    <div v-show="columnStore.processing.getColumns" class="flex-1 flex items-center justify-center">
+      <fwb-spinner size="12" />
     </div>
   </div>
 

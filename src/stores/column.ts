@@ -1,29 +1,39 @@
 import axiosInstance from "@/lib/axios";
 import { defineStore } from "pinia";
-import { reactive } from "vue";
-import type { ColumnProcessing, ColumnForm, CustomError } from "@/types";
+import { reactive, ref } from "vue";
+import type {
+  ColumnProcessing,
+  ColumnForm,
+  CustomError,
+  Column,
+} from "@/types";
 import { useToast } from "vue-toast-notification";
-import { useBoardStore } from "./board";
 
 export const useColumnStore = defineStore("column", () => {
+  const columns = ref<Column[] | []>([]);
   const processing = reactive<ColumnProcessing>({
     create: false,
     update: false,
     delete: false,
+    getColumns: false,
   });
 
   const $toast = useToast();
-  const boardStore = useBoardStore();
 
   const getColumns = async (boardId: number) => {
+    processing.getColumns = true;
+
     const response = await axiosInstance.get(`/boards/${boardId}/columns`, {
       params: {
         withColumnTasks: true,
         withColumnBoard: true,
+        withTaskColumn: true,
       },
     });
 
-    return response.data.data;
+    columns.value = response.data.data;
+
+    processing.getColumns = false;
   };
 
   const getColumn = async (boardId: number, columnId: number) => {
@@ -54,9 +64,9 @@ export const useColumnStore = defineStore("column", () => {
         signal: controller.signal,
       });
 
-      if (callback) callback();
+      await getColumns(boardId);
 
-      boardStore.board!.columns! = await getColumns(boardId);
+      if (callback) callback();
 
       $toast.success("Column created", {
         position: "top-right",
@@ -83,9 +93,7 @@ export const useColumnStore = defineStore("column", () => {
         signal: controller.signal,
       });
 
-      let column = boardStore.board!.columns?.find(
-        (column) => column.id === id
-      );
+      let column = columns.value.find((column) => column.id === id);
       column!.title = payload.title;
       column!.description = payload.description;
 
@@ -113,9 +121,7 @@ export const useColumnStore = defineStore("column", () => {
 
       if (callback) callback();
 
-      boardStore.board!.columns = boardStore.board!.columns!.filter(
-        (column) => column.id !== id
-      );
+      columns.value = columns.value.filter((column) => column.id !== id);
 
       $toast.success("Column deleted", {
         position: "top-right",
@@ -138,14 +144,9 @@ export const useColumnStore = defineStore("column", () => {
         position,
       });
 
-      let response = await axiosInstance.get(`/boards/${boardId}/columns`, {
-        params: {
-          withColumnTasks: true,
-          withColumnBoard: true,
-          withTaskColumn: true,
-        },
-      });
-      boardStore.board!.columns = response.data.data;
+      columns.value.find((column) => column.id === id)!.position = position;
+
+      columns.value.sort((a, b) => a.position - b.position);
 
       if (callback) callback();
 
@@ -158,10 +159,12 @@ export const useColumnStore = defineStore("column", () => {
   };
 
   return {
+    columns,
     processing,
     createColumn,
     updateColumn,
     deleteColumn,
     moveColumn,
+    getColumns,
   };
 });

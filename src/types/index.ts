@@ -65,6 +65,7 @@ export interface ColumnProcessing {
   create: boolean;
   update: boolean;
   delete: boolean;
+  getColumns: boolean;
 }
 
 export interface ColumnForm {
@@ -77,7 +78,7 @@ export interface Task {
   description: string;
   position: number;
   createdAt: string;
-  relations: [column_id?: number];
+  relations: { column_id?: number };
 }
 
 export interface TaskProcessing {
