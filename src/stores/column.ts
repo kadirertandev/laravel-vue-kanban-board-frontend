@@ -60,11 +60,15 @@ export const useColumnStore = defineStore("column", () => {
     processing.create = true;
 
     try {
-      await axiosInstance.post(`/boards/${boardId}/columns`, payload, {
-        signal: controller.signal,
-      });
+      const response = await axiosInstance.post(
+        `/boards/${boardId}/columns`,
+        payload,
+        {
+          signal: controller.signal,
+        }
+      );
 
-      await getColumns(boardId);
+      columns.value.push(response.data.data);
 
       if (callback) callback();
 

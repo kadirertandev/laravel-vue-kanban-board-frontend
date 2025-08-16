@@ -54,7 +54,7 @@ export const useTaskStore = defineStore("task", () => {
     processing.create = true;
 
     try {
-      await axiosInstance.post(
+      const response = await axiosInstance.post(
         `/boards/${boardId}/columns/${columnId}/tasks`,
         payload,
         {
@@ -64,12 +64,10 @@ export const useTaskStore = defineStore("task", () => {
 
       if (callback) callback();
 
-      let tasks = await getTasks(boardId, columnId);
-
       let column = columnStore.columns?.find(
         (column) => column.id === columnId
       );
-      column!.tasks = tasks;
+      column!.tasks?.push(response.data.data);
 
       $toast.success("Task created", {
         position: "top-right",

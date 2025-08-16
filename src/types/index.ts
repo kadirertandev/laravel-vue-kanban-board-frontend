@@ -34,6 +34,7 @@ export interface Board {
   id: number;
   title: string;
   description: string;
+  createdAtFrontend: string;
   createdAt: string;
   columns?: Column[];
 }

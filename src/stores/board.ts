@@ -58,17 +58,21 @@ export const useBoardStore = defineStore("board", () => {
     processing.create = true;
 
     try {
-      await axiosInstance.post("/boards", payload, {
+      const response = await axiosInstance.post("/boards", payload, {
         signal: controller.signal,
       });
+
+      boards.value?.push(response.data.data);
+      boards.value?.sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
 
       if (callback) callback();
 
       $toast.success("Board created", {
         position: "top-right",
       });
-
-      await getBoards();
     } catch (err) {
       Object.assign(error, err);
     } finally {
