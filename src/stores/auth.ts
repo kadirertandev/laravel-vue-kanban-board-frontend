@@ -38,6 +38,7 @@ export const useAuthStore = defineStore(
 
       try {
         await axiosInstance.post("/register", payload, {
+          baseURL: "http://localhost:8000/api",
           signal: controller.signal,
         });
         await getUser(controller);
@@ -67,6 +68,7 @@ export const useAuthStore = defineStore(
 
       try {
         await axiosInstance.post("/login", payload, {
+          baseURL: "http://localhost:8000/api",
           signal: controller.signal,
         });
         await getUser(controller);
@@ -88,6 +90,7 @@ export const useAuthStore = defineStore(
 
       try {
         const response = await axiosInstance.get("/user", {
+          baseURL: "http://localhost:8000/api",
           signal: controller.signal,
         });
         user.value = response.data;
@@ -100,7 +103,9 @@ export const useAuthStore = defineStore(
 
     const logout = async () => {
       try {
-        await axiosInstance.post("/logout");
+        await axiosInstance.post("/logout", [], {
+          baseURL: "http://localhost:8000/api",
+        });
         clearState();
         router.push({ name: "home", force: true });
         $toast.info("You're logged out!", {

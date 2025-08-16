@@ -5,7 +5,7 @@ import axios from "axios";
 import { useToast } from "vue-toast-notification";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:8000/api",
+  baseURL: "http://localhost:8000/api/v1",
   withCredentials: true,
   withXSRFToken: true,
   timeout: 30000,
