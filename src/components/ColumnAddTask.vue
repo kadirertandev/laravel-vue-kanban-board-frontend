@@ -41,7 +41,6 @@ const controller = useAbortController();
 
 const handleFormSubmit = async () => {
   await taskStore.createTask(
-    props.column.relations.board_id!,
     props.column.id,
     createTaskForm,
     error,

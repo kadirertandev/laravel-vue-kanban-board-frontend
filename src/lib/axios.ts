@@ -43,6 +43,9 @@ axiosInstance.interceptors.response.use(
           $toast.error("Unauthorized");
         })();
         break;
+      case 403:
+        router.push({ name: "403" });
+        break;
       case 404:
         router.push({ name: "404" });
         break;

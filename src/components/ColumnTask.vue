@@ -44,7 +44,6 @@ const controller = useAbortController();
 
 const handleFormSubmit = async () => {
   await taskStore.updateTask(
-    props.column.relations.board_id!,
     props.column.id!,
     props.task.id,
     updateTaskForm,

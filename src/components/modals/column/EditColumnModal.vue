@@ -34,7 +34,6 @@ const controller = useAbortController();
 
 const handleFormSubmit = () => {
   columnStore.updateColumn(
-    props.column.relations.board_id!,
     props.column.id,
     updateColumnForm,
     error,

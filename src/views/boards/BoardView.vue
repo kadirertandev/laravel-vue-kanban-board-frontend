@@ -55,7 +55,7 @@ const onChange = (event) => {
     position = nextColumn.position / 2;
   }
 
-  columnStore.moveColumn(boardStore.board.id, column.id, position);
+  columnStore.moveColumn(column.id, position);
 }
 </script>
 

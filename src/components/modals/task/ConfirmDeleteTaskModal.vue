@@ -16,7 +16,6 @@ const modalStore = useModalStore();
 
 const onDeleteConfirm = () => {
   taskStore.deleteTask(
-    props.column.relations.board_id!,
     props.column.id!,
     props.task.id,
     () => modalStore.closeModal('delete-task-' + props.task.id)

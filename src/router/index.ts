@@ -62,6 +62,14 @@ const router = createRouter({
       ],
     },
     {
+      path: "/403",
+      name: "403",
+      component: () => import("@/views/errors/403.vue"),
+      meta: {
+        requiresRedirect: true,
+      },
+    },
+    {
       path: "/404",
       name: "404",
       component: () => import("@/views/errors/404.vue"),

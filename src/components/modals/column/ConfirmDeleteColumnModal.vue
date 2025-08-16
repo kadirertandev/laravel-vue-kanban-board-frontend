@@ -15,7 +15,6 @@ const modalStore = useModalStore();
 
 const onDeleteConfirm = () => {
   columnStore.deleteColumn(
-    props.column.relations.board_id!,
     props.column.id,
     () => modalStore.closeModal('delete-column-' + props.column.id)
   )

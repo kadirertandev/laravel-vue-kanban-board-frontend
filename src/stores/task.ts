@@ -44,7 +44,6 @@ export const useTaskStore = defineStore("task", () => {
   };
 
   const createTask = async (
-    boardId: number,
     columnId: number,
     payload: TaskForm,
     error: CustomError,
@@ -55,7 +54,7 @@ export const useTaskStore = defineStore("task", () => {
 
     try {
       const response = await axiosInstance.post(
-        `/boards/${boardId}/columns/${columnId}/tasks`,
+        `/columns/${columnId}/tasks`,
         payload,
         {
           signal: controller.signal,
@@ -80,7 +79,6 @@ export const useTaskStore = defineStore("task", () => {
   };
 
   const updateTask = async (
-    boardId: number,
     columnId: number,
     id: number,
     payload: TaskForm,
@@ -91,13 +89,9 @@ export const useTaskStore = defineStore("task", () => {
     processing.update = true;
 
     try {
-      await axiosInstance.put(
-        `/boards/${boardId}/columns/${columnId}/tasks/${id}`,
-        payload,
-        {
-          signal: controller.signal,
-        }
-      );
+      await axiosInstance.put(`/tasks/${id}`, payload, {
+        signal: controller.signal,
+      });
 
       columnStore
         .columns!.find((col) => col.id === columnId)!
@@ -117,7 +111,6 @@ export const useTaskStore = defineStore("task", () => {
   };
 
   const deleteTask = async (
-    boardId: number,
     columnId: number,
     id: number,
     callback?: Function
@@ -125,9 +118,7 @@ export const useTaskStore = defineStore("task", () => {
     processing.delete = true;
 
     try {
-      await axiosInstance.delete(
-        `/boards/${boardId}/columns/${columnId}/tasks/${id}`
-      );
+      await axiosInstance.delete(`/tasks/${id}`);
 
       if (callback) callback();
 
@@ -147,8 +138,6 @@ export const useTaskStore = defineStore("task", () => {
   };
 
   const moveTask = async (
-    boardId: number,
-    columnId: number,
     task: Task,
     fromColumn: number | null,
     toColumn: Column,
@@ -158,14 +147,11 @@ export const useTaskStore = defineStore("task", () => {
     if (processing.move) return;
     processing.move = true;
     try {
-      await axiosInstance.put(
-        `/boards/${boardId}/columns/${columnId}/tasks/${task.id}/move`,
-        {
-          fromColumn: fromColumn,
-          toColumn: toColumn.id,
-          position,
-        }
-      );
+      await axiosInstance.put(`/tasks/${task.id}/move`, {
+        fromColumn: fromColumn,
+        toColumn: toColumn.id,
+        position,
+      });
 
       //remove task from column with id fromColumn
       let fromColumnTWW = columnStore.columns.find(

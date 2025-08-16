@@ -59,8 +59,6 @@
     }
 
     taskStore.moveTask(
-      props.column!.relations!.board_id!,
-      props.column.id,
       task,
       tasks.value![item.newIndex].relations.column_id,
       props.column,

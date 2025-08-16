@@ -36,16 +36,13 @@ export const useColumnStore = defineStore("column", () => {
     processing.getColumns = false;
   };
 
-  const getColumn = async (boardId: number, columnId: number) => {
-    const response = await axiosInstance.get(
-      `/boards/${boardId}/columns/${columnId}`,
-      {
-        params: {
-          withColumnTasks: true,
-          withColumnBoard: true,
-        },
-      }
-    );
+  const getColumn = async (columnId: number) => {
+    const response = await axiosInstance.get(`/columns/${columnId}`, {
+      params: {
+        withColumnTasks: true,
+        withColumnBoard: true,
+      },
+    });
 
     return response.data.data;
   };
@@ -83,7 +80,6 @@ export const useColumnStore = defineStore("column", () => {
   };
 
   const updateColumn = async (
-    boardId: number,
     id: number,
     payload: ColumnForm,
     error: CustomError,
@@ -93,7 +89,7 @@ export const useColumnStore = defineStore("column", () => {
     processing.update = true;
 
     try {
-      await axiosInstance.put(`/boards/${boardId}/columns/${id}`, payload, {
+      await axiosInstance.put(`/columns/${id}`, payload, {
         signal: controller.signal,
       });
 
@@ -113,15 +109,11 @@ export const useColumnStore = defineStore("column", () => {
     }
   };
 
-  const deleteColumn = async (
-    boardId: number,
-    id: number,
-    callback?: Function
-  ) => {
+  const deleteColumn = async (id: number, callback?: Function) => {
     processing.delete = true;
 
     try {
-      await axiosInstance.delete(`/boards/${boardId}/columns/${id}`);
+      await axiosInstance.delete(`/columns/${id}`);
 
       if (callback) callback();
 
@@ -138,13 +130,12 @@ export const useColumnStore = defineStore("column", () => {
   };
 
   const moveColumn = async (
-    boardId: number,
     id: number,
     position: number,
     callback?: Function
   ) => {
     try {
-      await axiosInstance.put(`/boards/${boardId}/columns/${id}/move`, {
+      await axiosInstance.put(`/columns/${id}/move`, {
         position,
       });
 
