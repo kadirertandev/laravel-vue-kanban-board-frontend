@@ -147,11 +147,13 @@ export const useTaskStore = defineStore("task", () => {
     if (processing.move) return;
     processing.move = true;
     try {
-      await axiosInstance.put(`/tasks/${task.id}/move`, {
-        fromColumn: fromColumn,
-        toColumn: toColumn.id,
-        position,
-      });
+      let taskData = await axiosInstance
+        .put(`/tasks/${task.id}/move`, {
+          fromColumn: fromColumn,
+          toColumn: toColumn.id,
+          position,
+        })
+        .then((response) => response.data.data);
 
       //remove task from column with id fromColumn
       let fromColumnTWW = columnStore.columns.find(
@@ -171,6 +173,13 @@ export const useTaskStore = defineStore("task", () => {
         relations: { column_id: toColumn.id },
       });
       toColumnTWW!.tasks?.sort((a, b) => a.position - b.position);
+
+      if (taskData.position !== position) {
+        //positions have been reset in this case
+        for (let i = 0; i <= toColumnTWW!.tasks!.length - 1; i++) {
+          toColumnTWW!.tasks![i].position = 60000 * (i + 1);
+        }
+      }
 
       if (callback) callback();
 
