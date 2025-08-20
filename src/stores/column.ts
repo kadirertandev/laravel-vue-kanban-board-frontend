@@ -135,13 +135,23 @@ export const useColumnStore = defineStore("column", () => {
     callback?: Function
   ) => {
     try {
-      await axiosInstance.put(`/columns/${id}/move`, {
-        position,
-      });
+      let columnData = await axiosInstance
+        .put(`/columns/${id}/move`, {
+          position,
+        })
+        .then((response) => response.data.data);
 
-      columns.value.find((column) => column.id === id)!.position = position;
+      let column = columns.value.find((column) => column.id === id);
+      column!.position = position;
 
       columns.value.sort((a, b) => a.position - b.position);
+
+      if (columnData.position !== position) {
+        //positions have been reset in this case
+        for (let i = 0; i <= columns.value.length - 1; i++) {
+          columns.value[i].position = 60000 * (i + 1);
+        }
+      }
 
       if (callback) callback();
 
