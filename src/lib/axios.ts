@@ -35,6 +35,10 @@ axiosInstance.interceptors.response.use(
       $toast.error("Request timeout!");
     }
 
+    if (err.code == "ERR_CANCELED" && !err.response) {
+      $toast.error("Request canceled!");
+    }
+
     switch (err.response.status) {
       case 401:
         auth.clearState();

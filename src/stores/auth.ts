@@ -31,12 +31,12 @@ export const useAuthStore = defineStore(
       if (processing.register) return;
       processing.register = true;
 
-      await axiosInstance.get("/sanctum/csrf-cookie", {
-        baseURL: "http://localhost:8000",
-        signal: controller.signal,
-      });
-
       try {
+        await axiosInstance.get("/sanctum/csrf-cookie", {
+          baseURL: "http://localhost:8000",
+          signal: controller.signal,
+        });
+
         await axiosInstance.post("/register", payload, {
           baseURL: "http://localhost:8000/api",
           signal: controller.signal,
@@ -61,12 +61,12 @@ export const useAuthStore = defineStore(
       if (processing.login) return;
       processing.login = true;
 
-      await axiosInstance.get("/sanctum/csrf-cookie", {
-        baseURL: "http://localhost:8000",
-        signal: controller.signal,
-      });
-
       try {
+        await axiosInstance.get("/sanctum/csrf-cookie", {
+          baseURL: "http://localhost:8000",
+          signal: controller.signal,
+        });
+
         await axiosInstance.post("/login", payload, {
           baseURL: "http://localhost:8000/api",
           signal: controller.signal,
@@ -95,9 +95,8 @@ export const useAuthStore = defineStore(
         });
         user.value = response.data;
         isLoggedIn.value = true;
-      } catch (error) {
-        console.error(error);
-        throw error;
+      } catch (err) {
+        throw err;
       }
     };
 
